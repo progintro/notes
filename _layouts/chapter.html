@@ -1,0 +1,31 @@
+---
+layout: default
+---
+
+<nav class="lab-nav lab-nav-top" aria-label="Πλοήγηση κεφαλαίων">
+  <span class="lab-nav-side">
+    {% if page.prev %}<a href="{{ site.baseurl }}/chapters/{{ page.prev }}/">&larr; Προηγούμενο</a>{% endif %}
+  </span>
+  <span class="lab-nav-mid"><a href="{{ site.baseurl }}/">Όλα τα κεφάλαια</a></span>
+  <span class="lab-nav-side lab-nav-right">
+    {% if page.next %}<a href="{{ site.baseurl }}/chapters/{{ page.next }}/">Επόμενο &rarr;</a>{% endif %}
+  </span>
+</nav>
+
+{{ content }}
+
+<p class="chapter-downloads">
+  Κατεβάστε το κεφάλαιο:
+  <a href="{{ site.baseurl }}/downloads/{{ page.dir | split: '/' | last }}.pdf">PDF</a> ·
+  <a href="https://github.com/progintro/notes/blob/main/{{ page.path }}">Markdown</a>
+</p>
+
+<nav class="lab-nav lab-nav-bottom" aria-label="Πλοήγηση κεφαλαίων">
+  <span class="lab-nav-side">
+    {% if page.prev %}<a href="{{ site.baseurl }}/chapters/{{ page.prev }}/">&larr; Προηγούμενο</a>{% endif %}
+  </span>
+  <span class="lab-nav-mid"><a href="{{ site.baseurl }}/">Όλα τα κεφάλαια</a></span>
+  <span class="lab-nav-side lab-nav-right">
+    {% if page.next %}<a href="{{ site.baseurl }}/chapters/{{ page.next }}/">Επόμενο &rarr;</a>{% endif %}
+  </span>
+</nav>

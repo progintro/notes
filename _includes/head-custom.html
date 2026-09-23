@@ -1,0 +1,137 @@
+<!--
+  Brand + rendering layer for the notes site.
+
+  Everything between the SHARED BEGIN / SHARED END markers below is copied verbatim
+  from progintro.github.io's _includes/head-custom.html (which is itself kept in sync
+  with lab-material's). If you change a colour or a script in the shared block, change
+  it in all three repos rather than editing one copy.
+
+  Below SHARED END are the parts that only exist on this site.
+-->
+
+<!-- ==================== SHARED BEGIN (keep in sync with lab-material) ============ -->
+
+<script>
+  /* Mermaid is 1.5 MB and MathJax another 250 KB. Both used to load on every page of
+     both sites, and mermaid loaded render-blocking - nothing painted until it had
+     downloaded and parsed. Together they were 1.7 MB of the syllabus landing page's
+     2.5 MB, and that page contains no diagram and no formula at all; most lab pages
+     use one or the other, not both.
+
+     Each is now fetched only if the rendered page actually contains its syntax, and
+     always asynchronously. A page with neither loads no third-party JavaScript.
+
+     The ES6 polyfill that used to sit above this was also render-blocking. Every
+     browser that needs it has been out of support for years. */
+  document.addEventListener("DOMContentLoaded", () => {
+    const load = (src, onload) => {
+      const s = document.createElement("script");
+      s.src = src;
+      s.async = true;
+      if (onload) s.onload = onload;
+      document.head.appendChild(s);
+    };
+
+    const blocks = document.querySelectorAll("code.language-mermaid");
+    if (blocks.length) {
+      load("https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js", () => {
+        blocks.forEach((block) => {
+          const parent = block.parentElement;
+          const mermaidDiv = document.createElement("div");
+          mermaidDiv.classList.add("mermaid");
+          mermaidDiv.innerHTML = block.textContent;
+          parent.replaceWith(mermaidDiv);
+        });
+        mermaid.initialize({ startOnLoad: true });
+      });
+    }
+
+    /* The delimiters MathJax is configured for below: $x$, $$x$$, \(x\), \[x\]. The
+       inline test needs a closing $ on the same line, so the terminal transcripts in
+       the handouts ("$ gcc -o foo foo.c") do not drag in a quarter of a megabyte. If
+       a page's math is ever missed it renders as its own source, which is visible
+       rather than silent. */
+    if (/\$\$|\\\(|\\\[|\$[^$\n]+\$/.test(document.body.textContent)) {
+      window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+      load("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js");
+    }
+  });
+</script>
+
+
+<style>
+  /* Brand palette, taken from the two institutional marks: the dit cyan and charcoal
+     blocks and the cornflower blue of the UOA crest. Kept in sync with labs/header.tex,
+     which applies the same colours to the PDFs. */
+  :root {
+    --dit-cyan: #0B7FA3;
+    --dit-charcoal: #444444;
+    --uoa-blue: #3F6FB5;
+  }
+
+  .markdown-body a { color: var(--dit-cyan); }
+  .markdown-body h1, .markdown-body h2 { border-bottom-color: #dfe6ea; }
+  .markdown-body h2 { color: var(--dit-charcoal); }
+
+  .lab-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    padding: 10px 0;
+    margin: 0;
+  }
+  .lab-nav-top { border-bottom: 2px solid var(--dit-cyan); margin-bottom: 24px; }
+  .lab-nav-bottom { border-top: 2px solid var(--dit-cyan); margin-top: 40px; }
+  .lab-nav-side { flex: 1; }
+  .lab-nav-right { text-align: right; }
+  .lab-nav-mid { flex: 0 0 auto; color: #6a737d; }
+  .lab-nav a { color: var(--dit-cyan); text-decoration: none; font-weight: 600; }
+  .lab-nav a:hover { text-decoration: underline; }
+
+  .lab-index td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+  .crest-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .crest-row img { max-height: 64px; width: auto; }
+</style>
+
+
+<!-- ==================== SHARED END =============================================== -->
+
+<style>
+  /* The figures are line drawings with a transparent background; give them a white
+     card so they stay legible whatever the page background, and keep wide ones
+     inside the column. */
+  .markdown-body img[src$=".svg"] {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 12px auto;
+    padding: 8px;
+    background: #fff;
+    border-radius: 4px;
+  }
+
+  /* Programs in the notes are long and carefully column-aligned (comments pushed to
+     the right margin), so they are set a little smaller rather than wrapped. */
+  .markdown-body pre { font-size: 80%; }
+
+  .chapter-downloads { font-size: 14px; color: #6a737d; margin-top: 32px; }
+
+  .downloads { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0 24px; }
+  .downloads a {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--dit-cyan);
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .downloads a:hover { background: var(--dit-cyan); color: #fff; }
+</style>

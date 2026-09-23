@@ -1,0 +1,58 @@
+% Preamble used only for the combined build/notes.pdf.
+%
+% Turns the concatenation of the chapters into a single book: a cover page, then
+% pandoc's table of contents, then each chapter starting on a fresh page with page
+% numbers running continuously throughout.
+
+% Suppresses the per-chapter masthead defined in header.tex - the cover replaces it.
+\def\nomasthead{}
+
+% Every chapter's H1 becomes a \section, so this starts each chapter on a new page.
+\usepackage{titlesec}
+\newcommand{\sectionbreak}{\clearpage}
+
+\AtBeginDocument{%
+  \begin{titlepage}
+    \centering
+    \vspace*{0.6cm}
+
+    \includegraphics[width=0.74\textwidth]{uoa.jpg}
+
+    \vspace{1.1cm}
+    {\color{ditcyan}\rule{0.85\textwidth}{1.4pt}}
+
+    \vspace{0.9cm}
+    {\Huge\bfseries Σημειώσεις\par}
+    \vspace{0.45cm}
+    {\LARGE Εισαγωγή στον Προγραμματισμό\par}
+    \vspace{0.35cm}
+    {\large\color{ditcharcoal}Παναγιώτης Σταματόπουλος\par}
+
+    \vspace{0.75cm}
+    {\color{ditcharcoal}\rule{0.85\textwidth}{0.5pt}}
+
+    \vspace{0.9cm}
+    \includegraphics[width=0.14\textwidth]{dit.jpg}
+
+    \vspace{0.45cm}
+    {\large Τμήμα Πληροφορικής και Τηλεπικοινωνιών\par}
+    {\large Εθνικό και Καποδιστριακό Πανεπιστήμιο Αθηνών\par}
+
+    \vfill
+
+    \begin{minipage}{0.9\textwidth}
+      \centering\scriptsize
+      Οι σημειώσεις βασίζονται στις διαφάνειες «Σημειώσεις Εισαγωγής στον
+      Προγραμματισμό» του καθηγητή Παναγιώτη Σταματόπουλου (Αθήνα, 2022),
+      μεταφερμένες σε Markdown ώστε να διατίθενται σε μορφή PDF, HTML και Markdown.\par
+    \end{minipage}
+
+    \vspace{0.7cm}
+    % \color (a switch) rather than \textcolor (a short command): the argument of
+    % \textcolor cannot contain a \par.
+    {\scriptsize\color{ditcharcoal}%
+      \texttt{progintro.github.io/notes}\par}
+
+    \vspace{0.4cm}
+  \end{titlepage}
+}

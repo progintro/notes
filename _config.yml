@@ -1,0 +1,50 @@
+# GitHub Pages configuration.
+#
+# Kept parallel to progintro/lab-material's _config.yml - the notes, the labs and the
+# course site are one course, and should read as one site. Unlike lab-material, this
+# site is built and deployed by .github/workflows/pages.yml rather than by classic
+# branch Pages, because the PDFs and the Markdown zip it offers for download are
+# build outputs that are not committed.
+title: Σημειώσεις - Εισαγωγή στον Προγραμματισμό
+description: >-
+  Σημειώσεις του μαθήματος «Εισαγωγή στον Προγραμματισμό» (Κ04) του Παναγιώτη
+  Σταματόπουλου, Τμήμα Πληροφορικής και Τηλεπικοινωνιών, Εθνικό και Καποδιστριακό
+  Πανεπιστήμιο Αθηνών.
+theme: jekyll-theme-primer
+lang: el
+
+# Needed because every chapter README carries front matter (layout / prev / next):
+# without it jekyll-readme-index skips them and every /chapters/NN-slug/ URL is a 404.
+# See progintro.github.io/_config.yml for why the course site must NOT set this.
+readme_index:
+  with_frontmatter: true
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  math_engine: mathjax
+
+plugins:
+  - jekyll-coffeescript
+  - jekyll-default-layout
+  - jekyll-gist
+  - jekyll-github-metadata
+  - jekyll-optional-front-matter
+  - jekyll-paginate
+  - jekyll-readme-index
+  - jekyll-relative-links
+  - jekyll-titles-from-headings
+  - jemoji
+
+exclude:
+  - Makefile
+  - CLAUDE.md
+  - CONTRIBUTING.md
+  - build/
+  - original/
+  - tex/
+  - tools/
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
+  - "figures/*.pdf"      # PDF copies of the figures exist only for the xelatex build

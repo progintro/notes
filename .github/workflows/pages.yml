@@ -1,0 +1,95 @@
+# Build the notes in all three formats and publish them to
+# https://progintro.github.io/notes/.
+#
+#   HTML      Jekyll (the same action classic Pages uses), from chapters/*/README.md
+#   PDF       make: one per chapter plus the whole book, via pandoc + xelatex
+#   Markdown  make: the sources and figures as notes-md.zip
+#
+# The PDFs and the zip are build outputs and are not committed, which is why this
+# site deploys from a workflow rather than straight from the branch: they are copied
+# into _site/downloads/ before upload. Pull requests run everything except the deploy.
+name: Build and publish notes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint Markdown
+        run: python3 tools/lint.py --strict
+
+      - name: Compile every program in the notes
+        run: python3 tools/check-code.py
+
+      # Serial on purpose: parallel pandoc containers have produced truncated PDFs.
+      - name: Build PDFs and Markdown zip
+        run: make
+
+      # A pandoc/xelatex failure can still leave a stub PDF behind.
+      - name: Check PDFs
+        run: |
+          sudo apt-get install -y -qq poppler-utils >/dev/null
+          for f in build/*.pdf; do
+            pages=$(pdfinfo "$f" | awk '/^Pages:/ {print $2}')
+            echo "$f: $pages pages"
+            [ "${pages:-0}" -gt 1 ] || { echo "::error::$f has ${pages:-0} page(s)"; exit 1; }
+          done
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      # kramdown needs $$x$$ for inline math; the committed Markdown keeps $x$ for
+      # GitHub and pandoc. See tools/site-prep.py.
+      - name: Prepare Markdown for kramdown
+        run: python3 tools/site-prep.py
+
+      - name: Build site
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Add downloads and check the site
+        run: |
+          sudo chown -R "$(id -u)" _site
+          mkdir -p _site/downloads
+          cp build/*.pdf build/notes-md.zip _site/downloads/
+          for d in chapters/*/; do
+            test -f "_site/${d}index.html" || { echo "::error::missing _site/${d}index.html"; exit 1; }
+          done
+          ls -la _site _site/downloads
+
+      - name: Upload site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
